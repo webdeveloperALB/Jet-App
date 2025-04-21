@@ -1,7 +1,8 @@
-// LandingPage.js
 import { useState, useEffect } from "react";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "./firebase";
+import { Link } from "react-router-dom";
+import { Plane, Twitter, Linkedin, Instagram, Mail, Phone, MapPin } from "lucide-react";
 import Navbar from "./components/Navbar";
 import Advertisement from "./components/Advertisement";
 import SignInForm from "./components/SignInForm";
@@ -15,6 +16,7 @@ export default function LandingPage() {
   const [username, setUsername] = useState("");
   const [isExistingMember, setIsExistingMember] = useState(false);
   const [loading, setLoading] = useState(true);
+  const currentYear = new Date().getFullYear();
 
   // Listen for authentication state changes
   useEffect(() => {
@@ -58,7 +60,6 @@ export default function LandingPage() {
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar
         signedIn={signedIn}
-        setSignedIn={setSignedIn}
         username={username}
         onSignOut={handleSignOut}
       />
@@ -169,44 +170,153 @@ export default function LandingPage() {
         </div>
       </main>
 
-      <footer className="bg-white border-t border-gray-200 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      {/* Footer Section */}
+      <footer className="bg-white border-t border-gray-200">
+        {/* Main Footer Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Top section with logo and description */}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 pb-8 border-b border-gray-100">
+            <div className="flex items-center mb-6 md:mb-0">
+              <Plane className="h-8 w-8 text-blue-600" />
+              <span className="ml-2 text-xl font-bold text-gray-900">JetPage</span>
+            </div>
+            <p className="text-gray-600 max-w-md">
+              Premium private jet charter services for business and leisure travel worldwide.
+            </p>
+          </div>
+          
+          {/* Footer Links Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 gap-y-10">
+            {/* About Us Column */}
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-4">About Us</h3>
-              <ul className="space-y-2 text-gray-600">
-                <li>Our Story</li>
-                <li>Team</li>
-                <li>Careers</li>
+              <ul className="space-y-3">
+                <li>
+                  <Link to="/our-story" className="text-gray-600 hover:text-blue-600 transition-colors">
+                    Our Story
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/team" className="text-gray-600 hover:text-blue-600 transition-colors">
+                    Team
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/careers" className="text-gray-600 hover:text-blue-600 transition-colors">
+                    Careers
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/press" className="text-gray-600 hover:text-blue-600 transition-colors">
+                    Press Releases
+                  </Link>
+                </li>
               </ul>
             </div>
+            
+            {/* Services Column */}
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Services</h3>
-              <ul className="space-y-2 text-gray-600">
-                <li>Private Jets</li>
-                <li>Corporate Travel</li>
-                <li>Group Charters</li>
+              <ul className="space-y-3">
+                <li>
+                  <Link to="/private-jets" className="text-gray-600 hover:text-blue-600 transition-colors">
+                    Private Jets
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/corporate-travel" className="text-gray-600 hover:text-blue-600 transition-colors">
+                    Corporate Travel
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/group-charters" className="text-gray-600 hover:text-blue-600 transition-colors">
+                    Group Charters
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/vip-services" className="text-gray-600 hover:text-blue-600 transition-colors">
+                    VIP Services
+                  </Link>
+                </li>
               </ul>
             </div>
+            
+            {/* Support Column */}
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Support</h3>
-              <ul className="space-y-2 text-gray-600">
-                <li>Contact Us</li>
-                <li>FAQs</li>
-                <li>Terms of Service</li>
+              <ul className="space-y-3">
+                <li>
+                  <Link to="/contact" className="text-gray-600 hover:text-blue-600 transition-colors">
+                    Contact Us
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/faqs" className="text-gray-600 hover:text-blue-600 transition-colors">
+                    FAQs
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/terms" className="text-gray-600 hover:text-blue-600 transition-colors">
+                    Terms of Service
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/privacy" className="text-gray-600 hover:text-blue-600 transition-colors">
+                    Privacy Policy
+                  </Link>
+                </li>
               </ul>
             </div>
+            
+            {/* Connect Column */}
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Connect</h3>
-              <ul className="space-y-2 text-gray-600">
-                <li>Twitter</li>
-                <li>LinkedIn</li>
-                <li>Instagram</li>
-              </ul>
+              <div className="flex flex-col space-y-4">
+                <div className="flex items-center space-x-3">
+                  <Mail className="h-5 w-5 text-blue-600" />
+                  <a href="mailto:info@jetpage.com" className="text-gray-600 hover:text-blue-600 transition-colors">
+                    info@jetpage.com
+                  </a>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Phone className="h-5 w-5 text-blue-600" />
+                  <a href="tel:+18001234567" className="text-gray-600 hover:text-blue-600 transition-colors">
+                    +1 (800) 123-4567
+                  </a>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <MapPin className="h-5 w-5 text-blue-600" />
+                  <span className="text-gray-600">New York, NY</span>
+                </div>
+                
+                {/* Social Media Icons */}
+                <div className="flex items-center space-x-4 mt-4 pt-2">
+                  <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-blue-500 transition-colors">
+                    <Twitter className="h-6 w-6" />
+                  </a>
+                  <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-blue-700 transition-colors">
+                    <Linkedin className="h-6 w-6" />
+                  </a>
+                  <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-pink-600 transition-colors">
+                    <Instagram className="h-6 w-6" />
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="mt-8 pt-8 border-t border-gray-200 text-center text-gray-600">
-            <p>&copy; {new Date().getFullYear()} JetPage. All rights reserved.</p>
+        </div>
+        
+        {/* Bottom Copyright Bar */}
+        <div className="bg-gray-50 py-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row justify-between items-center text-gray-500 text-sm">
+              <p>&copy; {currentYear} JetPage. All rights reserved.</p>
+              <div className="flex space-x-8 mt-4 md:mt-0">
+                <Link to="/terms" className="hover:text-blue-600 transition-colors">Terms</Link>
+                <Link to="/privacy" className="hover:text-blue-600 transition-colors">Privacy</Link>
+                <Link to="/cookies" className="hover:text-blue-600 transition-colors">Cookies</Link>
+              </div>
+            </div>
           </div>
         </div>
       </footer>
