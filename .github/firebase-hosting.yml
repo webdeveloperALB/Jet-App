@@ -1,0 +1,22 @@
+name: Deploy to Firebase Hosting
+
+on:
+  push:
+    branches:
+      - main  # or your default branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'  # or the version you're using
+      - run: npm install -g firebase-tools
+      - run: npm install
+      - run: npm run build  # Optional: if you're using build step
+      - run: firebase deploy --only hosting --token ${{ secrets.FIREBASE_AUTH_TOKEN }}
+        env:
+          FIREBASE_AUTH_TOKEN: ${{ secrets.FIREBASE_AUTH_TOKEN }}
