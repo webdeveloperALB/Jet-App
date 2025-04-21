@@ -1,7 +1,7 @@
 // MemberForm.js
 import { useState } from "react";
 import { signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
-import { auth } from "../firebase"; // Adjust path as needed
+import { auth } from "../firebase"; // Assuming firebase.js is one directory up
 
 export default function MemberForm({ setUsername, setSignedIn, onToggleForm }) {
     const [email, setEmail] = useState("");
@@ -13,15 +13,26 @@ export default function MemberForm({ setUsername, setSignedIn, onToggleForm }) {
 
     const validate = () => {
         const newErrors = {};
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-        if (!email.trim()) newErrors.email = "Email is required";
-        if (!password) newErrors.password = "Password is required";
+        if (!email.trim()) {
+            newErrors.email = "Email is required";
+        } else if (!emailRegex.test(email)) {
+            newErrors.email = "Invalid email format";
+        }
+        
+        if (!password) {
+            newErrors.password = "Password is required";
+        } else if (password.length < 6) {
+            newErrors.password = "Password must be at least 6 characters";
+        }
 
         return newErrors;
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setResetSent(false); // Reset password reset notification
 
         const formErrors = validate();
         if (Object.keys(formErrors).length > 0) {
@@ -47,18 +58,28 @@ export default function MemberForm({ setUsername, setSignedIn, onToggleForm }) {
             // Set signed in state
             setSignedIn(true);
             
-            // If "remember me" is not checked, set session persistence
-            // Note: Firebase handles persistence by default, but you can use
-            // setPersistence() from firebase/auth to customize this behavior
-            
         } catch (error) {
             console.error("Error during sign in:", error);
             
             // Handle specific Firebase errors
-            if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
-                setErrors({ form: "Invalid email or password" });
-            } else {
-                setErrors({ form: `An error occurred during sign in: ${error.message}` });
+            switch(error.code) {
+                case 'auth/user-not-found':
+                    setErrors({ form: "No account found with this email. Please sign up instead." });
+                    break;
+                case 'auth/wrong-password':
+                    setErrors({ form: "Incorrect password. Please try again." });
+                    break;
+                case 'auth/invalid-email':
+                    setErrors({ form: "Invalid email format" });
+                    break;
+                case 'auth/user-disabled':
+                    setErrors({ form: "This account has been disabled" });
+                    break;
+                case 'auth/too-many-requests':
+                    setErrors({ form: "Too many failed login attempts. Please try again later." });
+                    break;
+                default:
+                    setErrors({ form: `An error occurred during sign in: ${error.message}` });
             }
         } finally {
             setIsLoading(false);
@@ -66,8 +87,16 @@ export default function MemberForm({ setUsername, setSignedIn, onToggleForm }) {
     };
 
     const handleForgotPassword = async () => {
+        setErrors({}); // Clear any previous errors
+        
         if (!email.trim()) {
             setErrors({ email: "Please enter your email to reset password" });
+            return;
+        }
+        
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            setErrors({ email: "Please enter a valid email address" });
             return;
         }
         
@@ -76,7 +105,17 @@ export default function MemberForm({ setUsername, setSignedIn, onToggleForm }) {
             setResetSent(true);
         } catch (error) {
             console.error("Error sending password reset:", error);
-            setErrors({ form: `Failed to send password reset: ${error.message}` });
+            
+            switch(error.code) {
+                case 'auth/user-not-found':
+                    setErrors({ form: "No account found with this email" });
+                    break;
+                case 'auth/invalid-email':
+                    setErrors({ form: "Invalid email format" });
+                    break;
+                default:
+                    setErrors({ form: `Failed to send password reset: ${error.message}` });
+            }
         }
     };
 
@@ -103,8 +142,9 @@ export default function MemberForm({ setUsername, setSignedIn, onToggleForm }) {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className={`w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 ${errors.email ? "border-red-300" : "border-gray-300"
-                        }`}
+                    className={`w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
+                        errors.email ? "border-red-300" : "border-gray-300"
+                    }`}
                 />
                 {errors.email && (
                     <p className="mt-1 text-sm text-red-600">{errors.email}</p>
@@ -120,8 +160,9 @@ export default function MemberForm({ setUsername, setSignedIn, onToggleForm }) {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className={`w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 ${errors.password ? "border-red-300" : "border-gray-300"
-                        }`}
+                    className={`w-full px-3 py-2 border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 ${
+                        errors.password ? "border-red-300" : "border-gray-300"
+                    }`}
                 />
                 {errors.password && (
                     <p className="mt-1 text-sm text-red-600">{errors.password}</p>
